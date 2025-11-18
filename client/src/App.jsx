@@ -1,3 +1,7 @@
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import EventsPage from './pages/EventsPage';
@@ -6,7 +10,7 @@ import EvaluationHub from './components/EvaluationHub';
 import EventEvalForm from './pages/EventEvalForm';
 import SpeakerEvalForm from './pages/SpeakerEvalForm';
 
-export default function App(){
+function App() {
   return (
     <div className="app">
       <header>
@@ -24,3 +28,5 @@ export default function App(){
     </div>
   );
 }
+
+export default App
