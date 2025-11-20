@@ -1,5 +1,6 @@
 import axios from 'axios';
-const API = process.env.REACT_APP_API_BASE + '/evaluations';
+
+const API = import.meta.env.VITE_API_BASE + "/evaluations";//change react to vite
 
 export const getEventForm = (eventId) => axios.get(`${API}/event/form/${eventId}`);
 export const submitEventEvaluation = (data) => axios.post(`${API}/event/submit`, data);

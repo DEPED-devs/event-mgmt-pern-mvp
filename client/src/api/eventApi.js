@@ -1,5 +1,6 @@
 import axios from 'axios';
-const API = process.env.REACT_APP_API_BASE + '/events';
+const API = import.meta.env.VITE_API_BASE + "/events";//change react to vite
+
 
 export const getEvents = () => axios.get(API);
 export const getEvent = (id) => axios.get(`${API}/${id}`);
