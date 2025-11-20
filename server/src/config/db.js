@@ -3,8 +3,8 @@ const { Pool } = require('pg');
 const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'events_db',
-  password: process.env.DB_PASSWORD || 'password',
+  database: process.env.DB_NAME || 'depedcn_events_db',
+  password: process.env.DB_PASSWORD || '12345678',
   port: process.env.DB_PORT || 5432,
 });
 

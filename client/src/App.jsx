@@ -11,7 +11,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<EventsPage />} />
-        <Route path="/events/:id" element={<ViewEventPage />} />
+        <Route path="/events/:eventId" element={<ViewEventPage />} />
         <Route path="/events/:eventId/evaluate" element={<EvaluationHub />} />
         <Route
           path="/events/:eventId/evaluate/event"

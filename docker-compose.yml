@@ -18,8 +18,8 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=password
-      - DB_NAME=events_db
+      - DB_PASSWORD=deped123_events
+      - DB_NAME=depedcn_events_db
     ports:
       - "5000:5000"
     depends_on:
