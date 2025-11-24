@@ -26,7 +26,7 @@ const pool = require('../config/db');
 exports.addAttendee = async (req, res, next) => {
   try {
     const { event_date_id, employee_id } = req.body;
-    const { rows } = await pool.query('INSERT INTO employee_event_attendance (employee_id, event_date_id) VALUES ($1,$2) RETURNING *', [employee_id, event_date_id]);
+    const { rows } = await pool.query('INSERT INTO user_event_attendance (employee_id, event_date_id) VALUES ($1,$2) RETURNING *', [employee_id, event_date_id]);
     res.status(201).json(rows[0]);
   } catch (err) { next(err); }
 };
@@ -36,7 +36,7 @@ exports.getAttendeesForSession = async (req, res, next) => {
 
     const { rows } = await pool.query(`
       SELECT a.*, e.full_name, e.department
-      FROM employee_event_attendance a
+      FROM user_event_attendance a
       JOIN employees e ON e.id = a.employee_id
       WHERE a.event_date_id = $1
     `, [event_date_id]);
