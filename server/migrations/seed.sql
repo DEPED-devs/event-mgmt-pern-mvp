@@ -1,96 +1,177 @@
--- -- seed.sql: sample data
+--------------------------------------------------------
+-- SEED: ROLES (already seeded in init.sql)
+--------------------------------------------------------
 
--- INSERT INTO employees (name, email, role) VALUES ('Admin User','admin@example.com','admin');
-
--- INSERT INTO events (title, description, date, start_time, end_time, venue, created_by)
--- VALUES ('Intro to PERN','A short intro to PERN stack','2025-12-01','09:00:00','12:00:00','Main Hall',1);
-
--- -- attach default evaluation form for the event
--- INSERT INTO evaluation_forms (event_id, title) VALUES (1, 'Event Evaluation');
-
--- -- default event questions
--- INSERT INTO evaluation_questions (form_id, question_text, question_type, order_index) VALUES
--- (1, 'How would you rate the venue and facilities?', 'rating', 1),
--- (1, 'How satisfied are you with the overall event?', 'rating', 2),
--- (1, 'Any comments or suggestions?', 'text', 3);
-
--- -- add speakers
--- INSERT INTO speakers (event_id, name, topic) VALUES (1, 'Alice Santos', 'PERN Basics');
--- INSERT INTO speakers (event_id, name, topic) VALUES (1, 'Ramon Cruz', 'Advanced React');
-
--- -- create speaker forms
--- INSERT INTO speaker_evaluation_forms (speaker_id) VALUES (1);
--- INSERT INTO speaker_evaluation_forms (speaker_id) VALUES (2);
-
--- -- speaker questions
--- INSERT INTO speaker_evaluation_questions (form_id, question_text, question_type, order_index) VALUES
--- (1, 'Rate speaker clarity', 'rating', 1),
--- (1, 'How engaging was the speaker?', 'rating', 2),
--- (1, 'Comments for the speaker', 'text', 3),
--- (2, 'Rate speaker clarity', 'rating', 1),
--- (2, 'How engaging was the speaker?', 'rating', 2),
--- (2, 'Comments for the speaker', 'text', 3);
-
--- -- sample attendees
--- INSERT INTO event_attendees (event_id, name, email) VALUES (1, 'Juan dela Cruz', 'juan@example.com');
--- INSERT INTO event_attendees (event_id, name, email) VALUES (1, 'Maria Clara', 'maria@example.com');
-
--- seed_with_pgcrypto.sql
-BEGIN;
-
--- Ensure extension (if not present)
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
--- roles
-INSERT INTO roles (name, description) SELECT 'admin', 'Admin role' WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name='admin');
-INSERT INTO roles (name, description) SELECT 'organizer', 'Organizer' WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name='organizer');
-INSERT INTO roles (name, description) SELECT 'employee', 'Employee' WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name='employee');
-
--- sample employees
-INSERT INTO employees (employee_no, full_name, position, department, email, password_hash)
-SELECT 'EMP001', 'Juan Dela Cruz', 'Staff', 'Training', 'juan@example.com', crypt('EmployeePass123!', gen_salt('bf'))
-WHERE NOT EXISTS (SELECT 1 FROM employees WHERE employee_no='EMP001');
-
--- admin user (password = AdminPass123!)
-INSERT INTO users (username, password_hash, email, role_id)
-SELECT 'admin', crypt('AdminPass123!', gen_salt('bf')), 'admin@example.com', (SELECT id FROM roles WHERE name='admin')
+--------------------------------------------------------
+-- SEED: USERS
+--------------------------------------------------------
+INSERT INTO users (full_name, username, email, password_hash, role_id, department, position)
+SELECT 'Admin User', 'admin', 'admin@example.com', crypt('admin123', gen_salt('bf')), 
+       (SELECT id FROM roles WHERE name='admin'), 'IT', 'System Administrator'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='admin');
 
--- sample event type, event, date
-INSERT INTO event_types (name, description) SELECT 'training', 'Training events' WHERE NOT EXISTS (SELECT 1 FROM event_types WHERE name='training');
+INSERT INTO users (full_name, username, email, password_hash, role_id, department, position)
+SELECT 'Event Organizer', 'organizer1', 'organizer1@example.com', crypt('organizer123', gen_salt('bf')),
+       (SELECT id FROM roles WHERE name='organizer'), 'Planning', 'Event Organizer'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='organizer1');
+
+INSERT INTO users (full_name, username, email, password_hash, role_id, department, position)
+SELECT 'John Doe', 'john', 'john@example.com', crypt('password123', gen_salt('bf')),
+       (SELECT id FROM roles WHERE name='user'), 'Science', 'Teacher'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='john');
+
+INSERT INTO users (full_name, username, email, password_hash, role_id, department, position)
+SELECT 'Maria Santos', 'maria', 'maria@example.com', crypt('password123', gen_salt('bf')),
+       (SELECT id FROM roles WHERE name='user'), 'Math', 'Teacher'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='maria');
+
+--------------------------------------------------------
+-- SEED: RESOURCE SPEAKERS
+--------------------------------------------------------
+INSERT INTO resource_speakers (full_name, bio, email, organization, position, contact_info)
+SELECT 'Dr. Ramon Velasco', 'Expert in Educational Leadership', 'ramon.velasco@example.com', 'don bosco elementary school', 'Professor', '0942325345436'
+WHERE NOT EXISTS (SELECT 1 FROM resource_speakers WHERE full_name='Dr. Ramon Velasco');
+
+INSERT INTO resource_speakers (full_name, bio, email, organization, position, contact_info)
+SELECT 'Engr. Liza Domingo', 'STEM and Robotics Specialist', 'liza.domingo@example.com', 'gabaldon elementary school of engineering', 'Engineer', '0965464565745'
+WHERE NOT EXISTS (SELECT 1 FROM resource_speakers WHERE full_name='Engr. Liza Domingo');
+
+--------------------------------------------------------
+-- SEED: EVENT TYPES
+--------------------------------------------------------
+INSERT INTO event_types (name, description)
+SELECT 'Seminar', 'General seminars and orientation events'
+WHERE NOT EXISTS (SELECT 1 FROM event_types WHERE name='Seminar');
+
+INSERT INTO event_types (name, description)
+SELECT 'Training', 'Hands-on skill training programs'
+WHERE NOT EXISTS (SELECT 1 FROM event_types WHERE name='Training');
+
+INSERT INTO event_types (name, description)
+SELECT 'Workshop', 'Practical workshops'
+WHERE NOT EXISTS (SELECT 1 FROM event_types WHERE name='Workshop');
+
+--------------------------------------------------------
+-- SEED: EVENTS
+--------------------------------------------------------
+INSERT INTO events (title, description, event_type_id, organizer, location)
+SELECT 'STEM Enhancement Seminar', 'A seminar focused on enhancing STEM methodologies.',
+       (SELECT id FROM event_types WHERE name='Seminar'),
+       'DepEd Division Office', 'Conference Hall'
+WHERE NOT EXISTS (SELECT 1 FROM events WHERE title='STEM Enhancement Seminar');
 
 INSERT INTO events (title, description, event_type_id, organizer, location)
-SELECT 'Intro to PERN', 'A short intro', (SELECT id FROM event_types WHERE name='training'), 'L&D', 'Main Hall'
-WHERE NOT EXISTS (SELECT 1 FROM events WHERE title='Intro to PERN');
+SELECT 'Robotics Teacher Training', 'Hands-on robotics training for educators.',
+       (SELECT id FROM event_types WHERE name='Training'),
+       'DepEd Training Unit', 'Tech Room 3'
+WHERE NOT EXISTS (SELECT 1 FROM events WHERE title='Robotics Teacher Training');
 
-INSERT INTO event_dates (event_id, session_date, start_time, end_time, venue)
-SELECT (SELECT id FROM events WHERE title='Intro to PERN'), '2025-12-01', '09:00:00', '12:00:00', 'Main Hall'
-WHERE NOT EXISTS (SELECT 1 FROM event_dates WHERE event_id=(SELECT id FROM events WHERE title='Intro to PERN') AND session_date='2025-12-01');
+--------------------------------------------------------
+-- SEED: EVENT DATES
+--------------------------------------------------------
+INSERT INTO event_dates (event_id, session_date, start_time, end_time, venue, capacity)
+SELECT e.id, '2025-02-10', '08:00', '12:00', 'Conference Hall', 150
+FROM events e
+WHERE e.title='STEM Enhancement Seminar'
+AND NOT EXISTS (
+    SELECT 1 FROM event_dates WHERE event_id=e.id AND session_date='2025-02-10'
+);
 
--- sample speakers
-INSERT INTO resource_speakers (full_name, bio, email) SELECT 'Alice Santos', 'PERN basics', 'alice@example.com' WHERE NOT EXISTS (SELECT 1 FROM resource_speakers WHERE full_name='Alice Santos');
-INSERT INTO resource_speakers (full_name, bio, email) SELECT 'Ramon Cruz', 'Advanced React', 'ramon@example.com' WHERE NOT EXISTS (SELECT 1 FROM resource_speakers WHERE full_name='Ramon Cruz');
+INSERT INTO event_dates (event_id, session_date, start_time, end_time, venue, capacity)
+SELECT e.id, '2025-02-11', '13:00', '17:00', 'Tech Room 3', 40
+FROM events e
+WHERE e.title='Robotics Teacher Training'
+AND NOT EXISTS (
+    SELECT 1 FROM event_dates WHERE event_id=e.id AND session_date='2025-02-11'
+);
 
--- map speakers to event
+--------------------------------------------------------
+-- SEED: EVENT RESOURCE SPEAKERS
+--------------------------------------------------------
 INSERT INTO event_resource_speakers (event_id, resource_speaker_id)
-SELECT (SELECT id FROM events WHERE title='Intro to PERN'), (SELECT id FROM resource_speakers WHERE full_name='Alice Santos')
-WHERE NOT EXISTS (SELECT 1 FROM event_resource_speakers WHERE event_id=(SELECT id FROM events WHERE title='Intro to PERN') AND resource_speaker_id=(SELECT id FROM resource_speakers WHERE full_name='Alice Santos'));
+SELECT e.id, s.id
+FROM events e, resource_speakers s
+WHERE e.title='STEM Enhancement Seminar'
+  AND s.full_name='Dr. Ramon Velasco'
+  AND NOT EXISTS (
+        SELECT 1 FROM event_resource_speakers
+        WHERE event_id=e.id AND resource_speaker_id=s.id
+  );
 
 INSERT INTO event_resource_speakers (event_id, resource_speaker_id)
-SELECT (SELECT id FROM events WHERE title='Intro to PERN'), (SELECT id FROM resource_speakers WHERE full_name='Ramon Cruz')
-WHERE NOT EXISTS (SELECT 1 FROM event_resource_speakers WHERE event_id=(SELECT id FROM events WHERE title='Intro to PERN') AND resource_speaker_id=(SELECT id FROM resource_speakers WHERE full_name='Ramon Cruz'));
+SELECT e.id, s.id
+FROM events e, resource_speakers s
+WHERE e.title='Robotics Teacher Training'
+  AND s.full_name='Engr. Liza Domingo'
+  AND NOT EXISTS (
+        SELECT 1 FROM event_resource_speakers
+        WHERE event_id=e.id AND resource_speaker_id=s.id
+  );
 
--- default questions for event type
-INSERT INTO evaluation_questions (event_type_id, question_text, question_type, is_for_resource_speaker, sort_order)
-SELECT (SELECT id FROM event_types WHERE name='training'), 'How would you rate the venue and facilities?', 'rating', FALSE, 1
-WHERE NOT EXISTS (SELECT 1 FROM evaluation_questions WHERE question_text LIKE 'How would you rate the venue%');
+--------------------------------------------------------
+-- SEED: ATTENDANCE
+--------------------------------------------------------
+INSERT INTO user_event_attendance (user_id, event_date_id, status)
+SELECT (SELECT id FROM users WHERE username='john'),
+       (SELECT id FROM event_dates LIMIT 1),
+       'present'
+WHERE NOT EXISTS (
+    SELECT 1 FROM user_event_attendance 
+    WHERE user_id=(SELECT id FROM users WHERE username='john')
+);
 
-INSERT INTO evaluation_questions (event_type_id, question_text, question_type, is_for_resource_speaker, sort_order)
-SELECT (SELECT id FROM event_types WHERE name='training'), 'How satisfied are you with the overall event?', 'rating', FALSE, 2
-WHERE NOT EXISTS (SELECT 1 FROM evaluation_questions WHERE question_text LIKE 'How satisfied are you with the overall event%');
+INSERT INTO user_event_attendance (user_id, event_date_id, status)
+SELECT (SELECT id FROM users WHERE username='maria'),
+       (SELECT id FROM event_dates LIMIT 1),
+       'present'
+WHERE NOT EXISTS (
+    SELECT 1 FROM user_event_attendance 
+    WHERE user_id=(SELECT id FROM users WHERE username='maria')
+);
 
-INSERT INTO evaluation_questions (event_type_id, question_text, question_type, is_for_resource_speaker, sort_order)
-SELECT (SELECT id FROM event_types WHERE name='training'), 'Any comments or suggestions?', 'text', FALSE, 3
-WHERE NOT EXISTS (SELECT 1 FROM evaluation_questions WHERE question_text LIKE 'Any comments or suggestions%');
+--------------------------------------------------------
+-- SEED: EVALUATION QUESTIONS
+--------------------------------------------------------
+INSERT INTO evaluation_questions (event_type_id, question_text, question_type, sort_order)
+SELECT (SELECT id FROM event_types WHERE name='Seminar'),
+       'Rate the speaker’s clarity.',
+       'rating', 1
+WHERE NOT EXISTS (SELECT 1 FROM evaluation_questions WHERE question_text='Rate the speaker’s clarity.');
 
-COMMIT;
+INSERT INTO evaluation_questions (event_type_id, question_text, question_type, sort_order)
+SELECT (SELECT id FROM event_types WHERE name='Seminar'),
+       'Was the venue comfortable?',
+       'rating', 2
+WHERE NOT EXISTS (SELECT 1 FROM evaluation_questions WHERE question_text='Was the venue comfortable?');
+
+--------------------------------------------------------
+-- SEED: USER EVALUATIONS
+--------------------------------------------------------
+INSERT INTO user_evaluations (user_id, event_id, event_date_id, overall_rating, general_comment)
+SELECT
+    (SELECT id FROM users WHERE username='john'),
+    (SELECT id FROM events WHERE title='STEM Enhancement Seminar'),
+    (SELECT id FROM event_dates WHERE session_date='2025-02-10'),
+    5,
+    'Very informative seminar!'
+WHERE NOT EXISTS (
+    SELECT 1 FROM user_evaluations 
+    WHERE user_id=(SELECT id FROM users WHERE username='john')
+    AND event_id=(SELECT id FROM events WHERE title='STEM Enhancement Seminar')
+);
+
+--------------------------------------------------------
+-- SEED: USER EVALUATION RESPONSES
+--------------------------------------------------------
+INSERT INTO user_evaluation_responses (evaluation_id, question_id, response_text)
+SELECT 
+    (SELECT id FROM user_evaluations 
+        WHERE user_id=(SELECT id FROM users WHERE username='john')
+        AND event_id=(SELECT id FROM events WHERE title='STEM Enhancement Seminar')),
+    q.id,
+    '5'
+FROM evaluation_questions q
+WHERE q.question_text='Rate the speaker’s clarity.'
+AND NOT EXISTS (
+    SELECT 1 FROM user_evaluation_responses WHERE question_id=q.id
+);

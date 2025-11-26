@@ -14,13 +14,19 @@
 
 
 const router = require('express').Router();
-const ctrl = require('../controllers/evaluation.controller');
+const ctrl = require('../controllers/evaluationQuestions.controller');
 const { authenticate } = require('../middleware/auth.middleware');
 
+// router.get('/event/form/:eventId', ctrl.getEventForm);
+// router.post('/event/:eventId', authenticate, ctrl.submitEventEvaluation);
+
+// router.get('/speaker/form/:speakerId', ctrl.getSpeakerForm);
+// router.post('/speaker/:speakerId', authenticate, ctrl.submitSpeakerEvaluation);
+//dont delete this comment IMPORTANT ROUTES!!!!
 router.get('/event/form/:eventId', ctrl.getEventForm);
-router.post('/event/:eventId', authenticate, ctrl.submitEventEvaluation);
+router.post('/event/:eventId', ctrl.submitEventEvaluation);
 
 router.get('/speaker/form/:speakerId', ctrl.getSpeakerForm);
-router.post('/speaker/:speakerId', authenticate, ctrl.submitSpeakerEvaluation);
+router.post('/speaker/:speakerId', ctrl.submitSpeakerEvaluation);
 
 module.exports = router;
