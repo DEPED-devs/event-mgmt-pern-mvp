@@ -4,6 +4,7 @@ import ViewEventPage from "./pages/ViewEventPage";
 import EventEvalForm from "./pages/EventEvalForm";
 import SpeakerEvalForm from "./pages/SpeakerEvalForm";
 import EvaluationHub from "./components/EvaluationHub";
+import RegistrationPage from "./pages/RegistrationPage";
 import "./App.css";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           path="/events/:eventId/speakers/:speakerId/evaluate"
           element={<SpeakerEvalForm />}
         />
+        <Route path="/register" element={<RegistrationPage />} />
       </Routes>
     </div>
   );
