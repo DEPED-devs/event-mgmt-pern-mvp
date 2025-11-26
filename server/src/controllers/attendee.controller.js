@@ -25,8 +25,8 @@ const pool = require('../config/db');
 
 exports.addAttendee = async (req, res, next) => {
   try {
-    const { event_date_id, employee_id } = req.body;
-    const { rows } = await pool.query('INSERT INTO user_event_attendance (employee_id, event_date_id) VALUES ($1,$2) RETURNING *', [employee_id, event_date_id]);
+    const { event_date_id, user_id } = req.body;
+    const { rows } = await pool.query('INSERT INTO user_event_attendance (user_id, event_date_id) VALUES ($1,$2) RETURNING *', [user_id, event_date_id]);
     res.status(201).json(rows[0]);
   } catch (err) { next(err); }
 };

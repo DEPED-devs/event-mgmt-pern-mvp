@@ -7,8 +7,9 @@
             "port": 5432,
             "driver": "PostgreSQL",
             "name": "dems",
+            "username": "postgres",
             "database": "depedcn_events_db",
-            "username": "postgres"
+            "password": "12345678"
         }
     ]
 }

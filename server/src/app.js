@@ -1,35 +1,41 @@
+// const express = require('express');
+// const cors = require('cors');
+// const bodyParser = require('body-parser');
+// const routes = require('./routes'); // Import the index.js routes
+
+// const app = express();
+
+// // Middlewares
+// app.use(cors());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+
+// // Health check
+// app.get('/health', (req, res) => {
+//   res.json({ status: 'ok', message: 'API is running' });
+// });
+
+// // API routes
+// app.use('/api', routes); // Mount all routes under /api
+
+// // 404 handler
+// app.use((req, res, next) => {
+//   res.status(404).json({ message: 'Not Found' });
+// });
+
+// // Error handler
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).json({ message: 'Server Error', error: err.message });
+// });
+
+// module.exports = app;
+
 const express = require('express');
-const cors = require('cors');
-
-const eventRoutes = require('./routes/event.routes');
-const attendeeRoutes = require('./routes/attendee.routes');
-const evaluationRoutes = require('./routes/evaluation.routes');
-const speakerRoutes = require('./routes/speaker.routes');
-const authRoutes = require('./routes/auth.routes');
-const formbuilderRoutes = require('./routes/formbuilder.routes');
-const analyticsRoutes = require('./routes/analytics.routes');
-
 const app = express();
-app.use(cors());
+const routes = require('./routes'); // index.js
+
 app.use(express.json());
-
-
-// ... other routes
-app.use('/api/auth', authRoutes);
-app.use('/api/formbuilder', formbuilderRoutes);
-app.use('/api/evaluations', evaluationRoutes);
-app.use('/api/analytics', analyticsRoutes);
-
-app.use('/api/events', eventRoutes);
-app.use('/api/attendees', attendeeRoutes);
-app.use('/api/speakers', speakerRoutes);
-
-app.get('/', (req, res) => res.json({ message: 'Event mgmt API' }));
-
-// simple error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: err.message || 'Server error' });
-});
+app.use('/api', routes);
 
 module.exports = app;
